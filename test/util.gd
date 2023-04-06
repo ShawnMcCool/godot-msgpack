@@ -1,3 +1,4 @@
+class_name Util
 
 static func to_hex(bytes):
     var s = ""
@@ -9,7 +10,7 @@ static func to_hex(bytes):
 
 static func equals(a, b):
     var epsilon = 0.001
-    if typeof(a) == TYPE_REAL or typeof(b) == TYPE_REAL:
+    if typeof(a) == TYPE_FLOAT or typeof(b) == TYPE_FLOAT:
         return abs(a - b) <= epsilon
     elif typeof(a) == TYPE_DICTIONARY and typeof(b) == TYPE_DICTIONARY:
         return a.hash() == b.hash()

@@ -1,5 +1,4 @@
-
-var Util = load("res://test/utils.gd")
+var Util = preload("res://test/util.gd")
 
 func run(module):
     var success_count = 0
@@ -43,23 +42,23 @@ func decode_testcases():
     return [
         {
             name = "empty binary",
-            value = PoolByteArray([])
+            value = PackedByteArray([])
         },
         {
             name = "invalid byte tag",
-            value = PoolByteArray([0xc1])
+            value = PackedByteArray([0xc1])
         },
         {
             name = "not enough byte to read int64",
-            value = PoolByteArray([0xd3, 0x00, 0x00, 0x00])
+            value = PackedByteArray([0xd3, 0x00, 0x00, 0x00])
         },
         {
             name = "too many byte",
-            value = PoolByteArray([0x01, 0x02])
+            value = PackedByteArray([0x01, 0x02])
         },
         {
             name = "string size mismatch",
-            value = PoolByteArray([0xa5, 0x61, 0x65, 0x6c, 0x6c])
+            value = PackedByteArray([0xa5, 0x61, 0x65, 0x6c, 0x6c])
             # supposed to a the string 'hello' but the last L is missing
         },
     ]
