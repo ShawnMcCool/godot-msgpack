@@ -18,10 +18,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-#
 # godot-msgpack
 #
-# This is a MessagePack serializer written in pure GDSciprt. To install this
+# This is a MessagePack serializer written in pure GDScript. To install this
 # library in your project simply and copy and paste this file inside your
 # project (e.g. res://msgpack.gd).
 #
@@ -57,7 +56,7 @@ static func encode(value):
 			error_string = ctx.error_string,
 		}
 
-static func decode(bytes):
+static func decode(bytes) -> Dictionary:
 	var buffer = StreamPeerBuffer.new()
 	buffer.big_endian = true
 	buffer.data_array = bytes
@@ -85,21 +84,36 @@ static func _encode(buf, value, ctx):
 				buf.put_u8(0xc2)
 
 		TYPE_INT:
-			if -(1 << 5) <= value and value <= (1 << 7) - 1:
-				# fixnum (positive and negative)
-				buf.put_8(value)
-			elif -(1 << 7) <= value and value <= (1 << 7):
-				buf.put_u8(0xd0)
-				buf.put_8(value)
-			elif -(1 << 15) <= value and value <= (1 << 15):
-				buf.put_u8(0xd1)
-				buf.put_16(value)
-			elif -(1 << 31) <= value and value <= (1 << 31):
-				buf.put_u8(0xd2)
-				buf.put_32(value)
+			if value >= 0:
+				if value < 128:
+					buf.put_u8(value)
+				elif value <= 0xff :
+					buf.put_u8(0xcc)
+					buf.put_u8(value)
+				elif value <= 0xffff:
+					buf.put_u8(0xcd)
+					buf.put_u16(value)
+				elif value <= 0xffffffff:
+					buf.put_u8(0xce)
+					buf.put_u32(value)
+				else:
+					buf.put_u8(0xcf)
+					buf.put_u64(value)
 			else:
-				buf.put_u8(0xd3)
-				buf.put_64(value)
+				if value >= -32 :
+					buf.put_u8(0xe0 + (value + 32))
+				elif value >= -128 :
+					buf.put_u8(0xd0)
+					buf.put_8(value)
+				elif value >= -32768 :
+					buf.put_u8(0xd1)
+					buf.put_16(value)
+				elif value >= -2147483648 :
+					buf.put_u8(0xd2)
+					buf.put_32(value)
+				else:
+					buf.put_u8(0xd3)
+					buf.put_64(value)
 
 		TYPE_FLOAT:
 			buf.put_u8(0xca)
